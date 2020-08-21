@@ -1,0 +1,39 @@
+# export COMPOSE_TLS_VERSION=TLSv1_2
+
+version: "3.0"
+
+services:
+  apache:
+    build: "./apache"
+    ports:
+        - 80:80
+        - 443:443
+    volumes:
+        - ./html:/usr/local/apache2/htdocs
+        - ./certs:/usr/local/apache2/cert
+    networks:
+        - backend
+        - frontend
+    depends_on:
+        - php
+        - mysql
+    restart: always
+  php:
+    build: "./php"
+    volumes:
+        - ./html:/usr/local/apache/htdocs
+        - ./tmp:/usr/local/tmp
+    networks:
+        - backend
+    restart: always
+  mysql:
+    build: "./mysql"
+    volumes:
+        - ./database:/var/lib/mysql
+    networks:
+        - backend
+    restart: always
+
+networks:
+  backend:
+  frontend:
